@@ -28,6 +28,11 @@ jobs:
           OIDC_TOKEN=$(curl -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=$OPENFAAS_URL" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN")
           JWT=$(echo $OIDC_TOKEN | jq -j '.value')
 
+          faas-cli plugin get pro
+          faas-cli pro enable
+
+          faas-cli pro auth --token=$JWT
+
           faas-cli list -n dev
           faas-cli ns
           faas-cli store deploy -n dev printer --name p1
