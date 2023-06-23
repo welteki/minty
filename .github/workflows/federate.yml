@@ -20,34 +20,15 @@ jobs:
       - name: Dump env
         run: env
       - name: Install faas-cli
-        run: curl -sLS https://cli.openfaas.com | sudo sh
+        run: curl -sLS https://cli.openfaas.com | sudo sh          
       - name: Get token and use the CLI
         run: |
-          OIDC_TOKEN=$(curl -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://minty.exit.o6s.io" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN")
+          export OPENFAAS_URL="https://gw.exit.welteki.dev"
+
+          OIDC_TOKEN=$(curl -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=$OPENFAAS_URL" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN")
           JWT=$(echo $OIDC_TOKEN | jq -j '.value')
-          export OPENFAAS_URL=https://minty.exit.o6s.io
 
-
-          faas-cli list -n openfaas-fn --token "$JWT"
-          faas-cli ns --token "$JWT"
-          faas-cli store deploy printer --name p1 --token "$JWT"
-
-          faas-cli describe p1 --token "$JWT"
-          
-          curl -H "Authorization: Bearer $JWT" -i -f -s $OPENFAAS_URL/function/p1           
-          
-      # - name: Get token and use the CLI
-      #   run: |
-      #     EXCHANGE="https://auth.exit.o6s.io"
-
-      #     OIDC_TOKEN=$(curl -sLS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=$EXCHANGE" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN")
-      #     JWT=$(echo $OIDC_TOKEN | jq -j '.value')
-          
-      #     ACCESS_TOKEN=$(curl -sLS -d "$JWT" $EXCHANGE/oauth/token?grant_type=urn:ietf:params:oauth:grant-type:token-exchange&audience=$EXCHANGE)
-
-      #     export OPENFAAS_URL=https://gw.exit.o6s.io/
-
-      #     faas-cli list -n dev --token "$ACCESS_TOKEN"
-      #     faas-cli ns --token "$ACCESS_TOKEN"
-      #     faas-cli store deploy -n dev printer --name p1 --token "$ACCESS_TOKEN"
+          faas-cli list -n dev
+          faas-cli ns
+          faas-cli store deploy -n dev printer --name p1
 
