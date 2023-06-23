@@ -31,6 +31,7 @@ jobs:
           faas-cli plugin get pro
           faas-cli pro enable
 
+          echo "Authenticating with OpenFaaS"
           faas-cli pro auth --token=$JWT
 
           faas-cli list -n dev
